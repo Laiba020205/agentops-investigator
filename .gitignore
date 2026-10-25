@@ -1,0 +1,28 @@
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Secrets and environment variables
+.env
+.env.*
+!.env.example
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Generated benchmark reports
+benchmark/benchmark_report.json
+benchmark/compare_report.json
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
