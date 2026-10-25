@@ -1,442 +1,237 @@
+# AgentOps Investigator
 
+**Debugging and root-cause analysis for AI agent executions.**
 
-\# AgentOps Investigator
+AgentOps Investigator is a full-stack application that simulates AI agent executions, captures execution traces, identifies failures, and compares deterministic investigation with a Gemini-powered investigator.
 
+It is designed to make agent failures easier to understand by connecting tool calls, execution evidence, failure classifications, and investigation results in one dashboard.
 
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Gemini](https://img.shields.io/badge/Google%20Gemini-AI%20Investigation-4285F4?style=flat-square&logo=googlegemini&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-34%20passing-success?style=flat-square)
 
-\*\*An AI agent observability and root-cause analysis platform.\*\*
+---
 
+## Overview
 
+AI agents can fail in ways that are difficult to diagnose: tools time out, responses are malformed, calls repeat unnecessarily, and generated answers may contradict the available evidence.
 
-AgentOps Investigator captures AI agent execution traces, identifies common execution failures, and provides actionable diagnostic recommendations. It combines a deterministic rule-based investigator with a Gemini-powered investigator and presents the results in an interactive React dashboard.
+AgentOps Investigator explores how execution tracing and automated investigation can help diagnose these problems.
 
+The application provides a controlled environment for triggering failure scenarios, inspecting execution traces, and comparing a rule-based investigator with a Gemini-powered investigation system.
 
+## Key features
 
-\## Features
+- **Execution tracing** — inspect recorded events from simulated agent runs.
+- **Scenario-based testing** — reproduce success cases and different execution failures.
+- **Deterministic investigation** — classify failures using predefined rules and available evidence.
+- **Gemini-powered investigation** — use an LLM to analyze execution traces and propose diagnoses.
+- **Investigator comparison** — evaluate investigation outcomes against a benchmark of scenarios.
+- **Evidence validation** — combine model-generated diagnoses with deterministic validation.
+- **Replay support** — replay a run through the available API endpoint.
 
+## How it works
 
-
-\- \*\*Execution tracing:\*\* Capture agent starts, tool calls, tool results, errors, and completion events.
-
-\- \*\*Rule-based investigation:\*\* Diagnose common failures using deterministic diagnostic rules.
-
-\- \*\*LLM-powered investigation:\*\* Use Google Gemini to analyze traces and generate structured diagnoses.
-
-\- \*\*Evidence validation:\*\* Verify that cited event sequence numbers exist in the recorded trace.
-
-\- \*\*Deterministic safeguards:\*\* Correct diagnoses when the trace contains decisive evidence of known failure patterns.
-
-\- \*\*Interactive dashboard:\*\* Run demo scenarios, inspect trace timelines, and view diagnoses and recommendations.
-
-\- \*\*Scenario simulation:\*\* Test successful execution, missing arguments, timeouts, repeated tool calls, malformed responses, unsupported answers, conflicting evidence, and multiple failures.
-
-\- \*\*Investigator benchmarking:\*\* Compare diagnostic accuracy, evidence validity, API call success, and latency.
-
-
-
-\## Architecture
-
-
-
-```text
-
-&#x20;                React + Vite Dashboard
-
-&#x20;                         |
-
-&#x20;                         | HTTP / JSON
-
-&#x20;                         v
-
-&#x20;                   FastAPI Backend
-
-&#x20;                         |
-
-&#x20;             +-----------+-----------+
-
-&#x20;             |           |           |
-
-&#x20;             v           v           v
-
-&#x20;        Execution     Rule-Based    Gemini
-
-&#x20;          Agent      Investigator Investigator
-
-&#x20;             |
-
-&#x20;             v
-
-&#x20;       Trace Collector
-
-&#x20;             |
-
-&#x20;             v
-
-&#x20;      Recorded Events
-
-&#x20;             |
-
-&#x20;             v
-
-&#x20;      Diagnosis + Evidence
-
+```mermaid
+flowchart TD
+    A[React Dashboard] --> B[FastAPI Backend]
+    B --> C[Agent Execution Simulator]
+    C --> D[Execution Trace Collector]
+    D --> E[Trace and Evidence]
+    E --> F[Rule-Based Investigator]
+    E --> G[Gemini Investigator]
+    F --> H[Diagnosis and Evidence]
+    G --> I[LLM Diagnosis]
+    I --> J[Deterministic Validation]
+    H --> K[Investigation Results]
+    J --> K
+    K --> A
 ```
 
+The deterministic and LLM-based approaches can be compared using the same simulated execution scenarios. The validation layer helps assess whether an LLM-generated investigation is supported by the available evidence.
 
+## Failure scenarios
 
-\## Technology Stack
+The dashboard supports scenarios such as:
 
-
-
-| Component | Technology |
-
+| Scenario | What it tests |
 |---|---|
+| Success | Normal agent execution |
+| Missing order ID | Missing required input |
+| Tool timeout | Tool execution failure |
+| Repeated tool call | Unnecessary repeated execution |
+| Malformed tool response | Invalid tool output |
+| Unsupported answer | Answer not adequately supported by evidence |
+| Conflicting evidence | Inconsistent information |
+| Multiple failures | More than one failure in a run |
+| Misleading answer | Potentially misleading agent output |
 
-| Backend | Python, FastAPI |
+## Technology stack
 
-| Frontend | React, Vite, JavaScript |
+| Layer | Technologies |
+|---|---|
+| Frontend | React, Vite, JavaScript, CSS |
+| Backend | Python, FastAPI, Pydantic |
+| LLM integration | Google Gemini via `google-genai` |
+| Testing | Pytest, HTTPX |
+| Evaluation | Custom benchmark and investigator comparison scripts |
 
-| LLM integration | Google Gemini API |
+## Getting started
 
-| Data validation | Pydantic |
+### Prerequisites
 
-| Testing | Pytest |
+- Python 3.11 or a compatible version for the project's dependencies
+- Node.js and npm
+- A Google Gemini API key for LLM-powered investigation
 
-| Observability | Custom execution trace collector |
-
-
-
-\## Project Structure
-
-
-
-```text
-
-agentops-investigator/
-
-├── app/
-
-│   ├── agents/
-
-│   │   ├── execution\_agent.py
-
-│   │   ├── investigator.py
-
-│   │   ├── llm\_investigator.py
-
-│   │   └── replay.py
-
-│   ├── tools/
-
-│   │   └── mock\_crm.py
-
-│   ├── tracing/
-
-│   │   ├── collector.py
-
-│   │   └── models.py
-
-│   └── main.py
-
-├── benchmark/
-
-├── tests/
-
-├── frontend/
-
-├── .env.example
-
-├── .gitignore
-
-└── README.md
-
-```
-
-
-
-\*The tree above describes the main project components; individual filenames may vary with the current repository.\*
-
-
-
-\## Getting Started
-
-
-
-\### Prerequisites
-
-
-
-\- Python 3.10 or later
-
-\- Node.js and npm
-
-\- A Google Gemini API key for LLM-powered investigation
-
-
-
-\### 1. Clone the repository
-
-
+### 1. Clone the repository
 
 ```bash
-
-git clone <YOUR\_GITHUB\_REPOSITORY\_URL>
-
+git clone https://github.com/YOUR_USERNAME/agentops-investigator.git
 cd agentops-investigator
-
 ```
 
+Replace `YOUR_USERNAME` with your GitHub username.
 
-
-\### 2. Set up the Python backend
-
-
+### 2. Set up the backend
 
 Create and activate a virtual environment.
 
-
-
-\*\*Windows PowerShell:\*\*
-
-
+**Windows PowerShell**
 
 ```powershell
-
 python -m venv .venv
-
-.\\.venv\\Scripts\\Activate.ps1
-
+.\.venv\Scripts\Activate.ps1
 ```
 
-
-
-Install the project's Python dependencies:
-
-
+Install the dependencies:
 
 ```powershell
-
-pip install -r requirements.txt
-
+python -m pip install -r requirements.txt
 ```
 
+### 3. Configure Gemini
 
-
-Create a `.env` file in the project root:
-
-
+Set your API key in a local `.env` file in the project root, using the environment variable name expected by the application:
 
 ```env
-
-GEMINI\_API\_KEY=your\_gemini\_api\_key
-
-GEMINI\_MODEL=gemini-flash-latest
-
+GEMINI_API_KEY=your_api_key_here
 ```
 
+Never commit `.env` or expose your API key. The key is only required for features that use Gemini; availability of other endpoints depends on their implementation.
 
+### 4. Start the backend
 
-Keep your real API key private. Never commit `.env` to version control.
-
-
-
-Start the backend:
-
-
+From the project root:
 
 ```powershell
-
-uvicorn app.main:app --reload
-
+python -m uvicorn app.main:app --reload
 ```
 
+The API should be available at:
 
+- API: `http://127.0.0.1:8000`
+- Interactive API documentation: `http://127.0.0.1:8000/docs`
 
-The API is available at `http://127.0.0.1:8000`.
-
-
-
-Interactive API documentation is available at `http://127.0.0.1:8000/docs`.
-
-
-
-\### 3. Set up the frontend
-
-
+### 5. Start the frontend
 
 Open a second terminal:
 
-
-
 ```powershell
-
 cd frontend
-
 npm install
-
 npm run dev
-
 ```
 
+Open the local URL printed by Vite, typically `http://localhost:5173`.
 
-
-Open the local URL printed by Vite, usually `http://localhost:5173`.
-
-
-
-\### 4. Run the tests
-
-
-
-From the project root, with the virtual environment activated:
-
-
-
-```powershell
-
-python -m pytest -q
-
-```
-
-
-
-\### 5. Run the investigator benchmark
-
-
-
-```powershell
-
-python -m benchmark.compare\_investigators
-
-```
-
-
-
-The benchmark report is written to `benchmark/compare\_report.json`.
-
-
-
-\## API Endpoints
-
-
+## API endpoints
 
 | Method | Endpoint | Purpose |
-
 |---|---|---|
+| `GET` | `/health` | Health check |
+| `POST` | `/runs/demo` | Create a simulated agent run |
+| `GET` | `/runs/{run_id}` | Retrieve run details |
+| `GET` | `/runs/{run_id}/investigation` | Retrieve rule-based investigation |
+| `GET` | `/runs/{run_id}/llm-investigation` | Retrieve LLM-based investigation |
+| `POST` | `/runs/{run_id}/replay` | Replay a run with an order ID |
 
-| GET | `/health` | Check API health |
+Refer to `/docs` for the request schemas and response formats.
 
-| POST | `/runs/demo` | Run a demo scenario |
+## Testing and evaluation
 
-| GET | `/runs/{run\_id}` | Retrieve an execution trace |
+### Automated tests
 
-| GET | `/runs/{run\_id}/investigation` | Run rule-based investigation |
+The project has **34 passing tests** in the latest recorded test run.
 
-| GET | `/runs/{run\_id}/llm-investigation` | Run Gemini-powered investigation |
+Run the test suite with:
 
-| POST | `/runs/{run\_id}/replay` | Replay a run with a supplied order ID |
-
-
-
-\### Example: Run a timeout scenario
-
-
-
-```http
-
-POST /runs/demo
-
-Content-Type: application/json
-
-
-
-{
-
-&#x20; "scenario": "timeout"
-
-}
-
+```bash
+python -m pytest -q
 ```
 
+### Investigator benchmark
 
+The latest recorded benchmark evaluated 11 scenarios.
 
-The response contains a run ID, execution status, answer, and trace events.
+| Metric | Rule-based | Gemini + validation |
+|---|---:|---:|
+| Scenario accuracy | 100% | 100% |
+| Evidence validity | 100% | 100% |
+| Successful investigation calls | — | 11 / 11 |
+| Average investigation latency | 0.02 ms | 1.56 s |
 
+**Interpretation:** These results apply to the project's 11-scenario benchmark, not to arbitrary production workloads. The Gemini result measures the combined LLM and deterministic-validation system, not the standalone model. Latency is environment-dependent.
 
+Run the benchmark comparison with:
 
-\## Benchmark Results
+```bash
+python -m benchmark.compare_investigators
+```
 
+The comparison script generates a report at `benchmark/compare_report.json` when executed. Generated reports are excluded from Git by the project's ignore rules.
 
+## Project structure
 
-Latest recorded benchmark run:
+```text
+agentops-investigator/
+├── app/
+│   ├── agents/
+│   │   ├── execution_agent.py
+│   │   ├── investigator.py
+│   │   ├── llm_investigator.py
+│   │   └── replay.py
+│   ├── tools/
+│   ├── tracing/
+│   └── main.py
+├── benchmark/
+│   ├── compare_investigators.py
+│   └── run_benchmark.py
+├── frontend/
+│   └── src/
+├── tests/
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
 
+## Current scope and limitations
 
+- Agent execution and failures are simulated; this is not yet a production observability platform.
+- Benchmark results are based on a small, predefined set of scenarios.
+- Gemini-based investigation depends on API availability, credentials, and model behavior.
+- Results should not be interpreted as a guarantee of correctness on unseen agent traces.
 
-| Metric | Result |
+## Future improvements
 
-|---|---:|
+- Integrate traces from real agent frameworks.
+- Add persistent run history and searchable investigations.
+- Expand the benchmark with unseen scenarios and more rigorous evaluation.
+- Measure diagnosis precision, recall, latency, and cost across larger test sets.
+- Add trace export and richer evidence visualization.
 
-| Scenarios evaluated | 11 |
+---
 
-| Rule-based accuracy | 100% (11/11) |
-
-| Combined Gemini-system accuracy | 100% (11/11) |
-
-| Gemini API call success | 100% (11/11) |
-
-| Evidence validity | 100% |
-
-| Average rule-based latency | 0.02 ms |
-
-| Average Gemini latency | Approximately 1.56 seconds |
-
-
-
-The combined Gemini-system result includes deterministic validation safeguards; it does not represent Gemini's independent accuracy.
-
-
-
-\*\*Evaluation limitation:\*\* These results apply to the current 11-scenario benchmark. They do not establish generalization to unseen production traces. Latency may vary with API availability, network conditions, and model behavior.
-
-
-
-\## Security and Limitations
-
-
-
-\- The demo uses a mock CRM tool and in-memory trace collection.
-
-\- Recorded runs may be lost when the backend process restarts.
-
-\- Gemini-powered investigation requires a valid API key and network access.
-
-\- This project is a prototype and has not been validated for production use.
-
-\- Never commit API keys, credentials, or other secrets.
-
-
-
-\## Future Improvements
-
-
-
-\- Persistent trace storage
-
-\- More diverse and unseen benchmark scenarios
-
-\- Production-grade authentication and access control
-
-\- Configurable tracing and monitoring integrations
-
-\- Deployment and operational monitoring
-
-
-
-\## License
-
-
-
-Choose and add a license before distributing or accepting contributions.
-
-
-
+**Built to explore reliable debugging and evidence-grounded investigation for AI agents.**
